@@ -57,3 +57,28 @@ exports.login = async (req, res) => {
   }
 };
 
+// Obtener el usuario actual a partir del token
+exports.getMe = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ message: 'Token no proporcionado' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findByPk(decoded.userId, {
+      attributes: ['id', 'name', 'email'],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    res.json({ id: user.id, name: user.name, email: user.email });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: 'Token inválido' });
+  }
+};

@@ -1,13 +1,11 @@
-
 const express = require('express');
 const router = express.Router();
-const { createAppointment, getUserAppointments } = require('../controllers/appointmentController');
-const authMiddleware = require('../middleware/authMiddleware');
+const appointmentController = require('../controllers/appointmentController');
+const authenticateToken = require('../middlewares/authMiddleware');
 
-// Crear nueva cita (reservar)
-router.post('/', authMiddleware, createAppointment);
-
-// Obtener todas las citas del usuario logueado
-router.get('/', authMiddleware, getUserAppointments);
+router.post('/', authenticateToken, appointmentController.createAppointment);
+router.get('/my', authenticateToken, appointmentController.getUserAppointments);
+router.delete('/:id', authenticateToken, appointmentController.deleteAppointment);
+router.put('/:id', authenticateToken, appointmentController.updateAppointment);
 
 module.exports = router;
